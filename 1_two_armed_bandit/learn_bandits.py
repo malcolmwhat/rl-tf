@@ -18,10 +18,12 @@ band = {
     "size": 0
 }
 
+
 def add_bandit(bandit_value):
     """Basic function for adding bandits."""
     band["bandits"].append(bandit_value)
     band["size"] = len(band["bandits"])
+
 
 def pull_bandit(n):
     """Pull the n-th bandit.
@@ -38,7 +40,7 @@ class Agent(object):
     def __init__(self):
         tf.reset_default_graph()
 
-        # Feedforward components.
+        # Feed forward components.
         self.weights = tf.Variable(tf.ones([band["size"]]))
         self.chosen_action = tf.argmax(self.weights, 0)
 
@@ -51,6 +53,8 @@ class Agent(object):
         self.update = self.optimizer.minimize(self.loss)
 
         self.init = tf.initialize_all_variables()
+        self.session = None
+        self.bandit_weights = None
 
     def start(self):
         self.session = tf.Session()
@@ -74,7 +78,7 @@ class Agent(object):
     def learn(self, action, reward):
         """Update the neural network based on the action, reward pair."""
         dict_in = {self.reward_holder: [reward],
-                     self.action_holder: [action]}
+                   self.action_holder: [action]}
 
         _, _, self.bandit_weights = self.session.run([self.update,
                                                      self.relevant_weight,
